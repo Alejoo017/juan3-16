@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso al estudio bíblico — {{ iglesia.nombre }}</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo/logo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aula.css') }}">
+</head>
+<body>
+{% from 'parciales/iconos.html' import icono, marca with context %}
+
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div class="avisos" id="avisos">
+    {% for categoria, texto in mensajes %}
+      <div class="aviso aviso--{{ categoria }}">
+        <span>{{ texto }}</span>
+        <button class="aviso__cerrar" aria-label="Cerrar aviso">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<div class="pantalla-acceso">
+
+  <!-- Lado ilustrado (se oculta en pantallas pequeñas) -->
+  <aside class="acceso__lado">
+    {{ marca('marca') }}
+    <div>
+      <h2>Aula del estudio bíblico</h2>
+      <p>El cronograma, las tareas, el enlace de la clase y el material de apoyo, en un solo lugar.</p>
+    </div>
+    <blockquote class="acceso__versiculo">
+      «{{ juan316.texto }}»
+      <span class="acceso__cita">{{ juan316.cita }}</span>
+    </blockquote>
+  </aside>
+
+  <!-- Formulario -->
+  <main class="acceso__formulario">
+    <div class="caja-acceso">
+      <a href="{{ url_for('publico.inicio') }}" class="enlace-volver">
+        {{ icono('flecha-izq', 15) }} Volver al sitio de la iglesia
+      </a>
+
+      <div class="caja-acceso__candado">{{ icono('candado', 24) }}</div>
+      <h1>Acceso al estudio</h1>
+
+      <div class="nota-restriccion">
+        {{ icono('campana', 18) }}
+        <span>Este acceso es únicamente para estudiantes inscritos de manera oficial.
+              Las credenciales las entrega la administración.</span>
+      </div>
+
+      <form method="POST" action="{{ url_for('estudio.login') }}" autocomplete="on">
+        <div class="campo">
+          <label for="usuario">Usuario</label>
+          <input type="text" id="usuario" name="usuario" value="{{ usuario_previo }}"
+                 required autofocus autocomplete="username" placeholder="Tu nombre de usuario">
+        </div>
+
+        <div class="campo">
+          <label for="contrasena">Contraseña</label>
+          <input type="password" id="contrasena" name="contrasena" required
+                 autocomplete="current-password" placeholder="••••••••">
+        </div>
+
+        <label style="display:flex;align-items:center;gap:9px;font-size:.88rem;color:var(--texto-medio);margin-bottom:22px;cursor:pointer">
+          <input type="checkbox" name="recordar" value="1" style="width:auto;margin:0">
+          Mantener la sesión iniciada en este dispositivo
+        </label>
+
+        <button type="submit" class="boton boton--principal boton--bloque">
+          Iniciar sesión {{ icono('flecha', 16) }}
+        </button>
+      </form>
+
+      <div class="caja-acceso__pie">
+        <p style="margin-bottom:10px">¿Problemas para acceder o perdiste tu contraseña?</p>
+        <a href="{{ wa('whatsapp_admin', 'acceso') }}" target="_blank" rel="noopener"
+           class="boton boton--linea boton--sm">
+          {{ icono('whatsapp', 15) }} Contactar a la administración
+        </a>
+        <p style="margin-top:18px;margin-bottom:0">
+          ¿Todavía no estás inscrito?
+          <a href="{{ url_for('estudio.informacion') }}#inscripcion">Conoce cómo inscribirte</a>.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/principal.js') }}"></script>
+</body>
+</html>

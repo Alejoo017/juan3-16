@@ -1,0 +1,46 @@
+{# Layout del aula privada: reusa base.html pero cambia cabecera y pie #}
+{% extends 'base.html' %}
+{% from 'parciales/iconos.html' import icono, marca with context %}
+
+{% block clase_body %}aula{% endblock %}
+
+{% block css_extra %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aula.css') }}">
+  {% block css_aula %}{% endblock %}
+{% endblock %}
+
+{% block cabecera %}
+<header class="aula__barra">
+  <div class="contenedor aula__barra-interior">
+    {{ marca() }}
+
+    <nav class="aula__menu">
+      <a href="{{ url_for('estudio.aula') }}" class="{{ 'activo' if request.endpoint == 'estudio.aula' }}">Mi aula</a>
+      <a href="{{ url_for('estudio.lista_clases') }}" class="{{ 'activo' if request.endpoint in ['estudio.lista_clases', 'estudio.detalle_clase'] }}">Cronograma</a>
+      <a href="{{ url_for('estudio.lista_recursos') }}" class="{{ 'activo' if request.endpoint == 'estudio.lista_recursos' }}">Material</a>
+      {% if current_user.es_admin %}
+      <a href="{{ url_for('admin.panel') }}" class="{{ 'activo' if request.blueprint == 'admin' }}">Administración</a>
+      {% endif %}
+    </nav>
+
+    <div class="aula__usuario">
+      <a href="{{ url_for('estudio.perfil') }}" class="avatar {{ 'avatar--admin' if current_user.es_admin }}"
+         title="Mi perfil">{{ current_user.nombre[0]|upper }}</a>
+      <div class="aula__usuario-datos">
+        <strong>{{ current_user.primer_nombre }}</strong>
+        <span>{{ 'Administración' if current_user.es_admin else current_user.nivel }}</span>
+      </div>
+      <a href="{{ url_for('estudio.logout') }}" class="boton-icono" title="Cerrar sesión">{{ icono('salir', 17) }}</a>
+    </div>
+  </div>
+</header>
+{% endblock %}
+
+{% block pie %}
+<footer style="padding:26px 0;border-top:1px solid var(--borde);background:var(--fondo)">
+  <div class="contenedor" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;font-size:.84rem;color:var(--texto-suave)">
+    <span>{{ iglesia.nombre }} · Aula del estudio bíblico</span>
+    <span><a href="{{ url_for('publico.inicio') }}">Ir al sitio de la iglesia</a></span>
+  </div>
+</footer>
+{% endblock %}

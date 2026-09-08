@@ -1,0 +1,75 @@
+{# Macros de iconos SVG. Se usan así:  {{ icono('whatsapp', 18) }}  #}
+{% macro icono(nombre, tam=20) -%}
+<svg width="{{ tam }}" height="{{ tam }}" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+     aria-hidden="true" focusable="false">
+  {%- if nombre == 'whatsapp' -%}
+    <path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.8-5.2A8.4 8.4 0 1 1 21 11.5Z"/>
+    <path d="M8.6 9.2c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.4l.7 1.6c.1.2 0 .4-.1.5l-.4.5c-.1.2-.2.3 0 .6a6 6 0 0 0 2.6 2.2c.3.1.4 0 .6-.1l.5-.6c.2-.2.3-.2.5-.1l1.5.8c.3.1.3.3.3.5a1.7 1.7 0 0 1-1.2 1.4c-.5.1-1.2.2-3.4-.8a8 8 0 0 1-3.5-3.6c-.5-1-.5-1.8-.4-2.3a2 2 0 0 1 .5-.9Z" fill="currentColor" stroke="none"/>
+  {%- elif nombre == 'reloj' -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  {%- elif nombre == 'lugar' -%}
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+  {%- elif nombre == 'calendario' -%}
+    <rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/>
+  {%- elif nombre == 'candado' -%}
+    <rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+  {%- elif nombre == 'correo' -%}
+    <rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/>
+  {%- elif nombre == 'telefono' -%}
+    <path d="M5 3h3.5l1.7 4.3-2.1 1.6a12 12 0 0 0 5.9 5.9l1.6-2.1L20 16.5V20a1.5 1.5 0 0 1-1.6 1.5C10.4 21 3 13.6 3.5 4.6A1.5 1.5 0 0 1 5 3Z"/>
+  {%- elif nombre == 'flecha' -%}
+    <path d="M5 12h14M13 6l6 6-6 6"/>
+  {%- elif nombre == 'flecha-izq' -%}
+    <path d="M19 12H5M11 18l-6-6 6-6"/>
+  {%- elif nombre == 'video' -%}
+    <rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m16 10.5 5-3v9l-5-3z"/>
+  {%- elif nombre == 'libro' -%}
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>
+  {%- elif nombre == 'documento' -%}
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>
+  {%- elif nombre == 'audio' -%}
+    <path d="M11 5 6.5 9H3v6h3.5L11 19z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+  {%- elif nombre == 'enlace' -%}
+    <path d="M10 13a4 4 0 0 0 5.7.3l3-3a4 4 0 0 0-5.7-5.7L11.5 6"/>
+    <path d="M14 11a4 4 0 0 0-5.7-.3l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.4"/>
+  {%- elif nombre == 'usuario' -%}
+    <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+  {%- elif nombre == 'salir' -%}
+    <path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2"/><path d="M19 12H9m10 0-3-3m3 3-3 3"/>
+  {%- elif nombre == 'copiar' -%}
+    <rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a1.5 1.5 0 0 1-1.5-1.5V4A1.5 1.5 0 0 1 4 2.5h9.5A1.5 1.5 0 0 1 15 4v1"/>
+  {%- elif nombre == 'corazon' -%}
+    <path d="M12 20.5S3.5 15 3.5 9.2A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.5 2.8c0 5.8-8.5 11.3-8.5 11.3Z"/>
+  {%- elif nombre == 'chequeo' -%}
+    <path d="m5 12.5 4.5 4.5L19 7"/>
+  {%- elif nombre == 'mas' -%}
+    <path d="M12 5v14M5 12h14"/>
+  {%- elif nombre == 'basura' -%}
+    <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>
+  {%- elif nombre == 'lapiz' -%}
+    <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z"/>
+  {%- elif nombre == 'campana' -%}
+    <path d="M18 9a6 6 0 0 0-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9Z"/><path d="M10.5 20a2 2 0 0 0 3 0"/>
+  {%- elif nombre == 'cruz' -%}
+    <path d="M18 6 6 18M6 6l12 12"/>
+  {%- endif -%}
+</svg>
+{%- endmacro %}
+
+{# Marca de la iglesia: usa el logo si existe, si no dibuja uno equivalente #}
+{% macro marca(clase='marca') -%}
+<a href="{{ url_for('publico.inicio') }}" class="{{ clase }}" aria-label="Inicio · {{ iglesia.nombre }}">
+  <img src="{{ url_for('static', filename='img/logo/logo.png') }}" alt=""
+       class="marca__img"
+       onerror="this.classList.add('oculto');this.nextElementSibling.classList.remove('oculto');">
+  <svg class="marca__svg oculto" viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M20 8c6 6 7 12 3 18-3 5-3 10 1 14 2 2 3 5 2 8-7-2-12-8-13-16C12 24 15 15 20 8Z" fill="#C0413A"/>
+    <path d="M34 6h8v14h12v8H42v30h-8V28H24v-8h10V6Z" fill="#2B2926"/>
+  </svg>
+  <span class="marca__texto">
+    <span class="marca__nombre">Comunidad Cristiana</span>
+    <span class="marca__cita">Juan 3:16</span>
+  </span>
+</a>
+{%- endmacro %}

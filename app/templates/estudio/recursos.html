@@ -1,0 +1,66 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+{% block titulo %}Material de apoyo — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+<div class="aula__cuerpo">
+  <div class="contenedor">
+
+    <div class="aula__saludo">
+      <h1>Material de apoyo</h1>
+      <p>Guías, lecturas y recursos que acompañan las clases.</p>
+    </div>
+
+    <div class="aula__grid">
+      <div>
+        <section class="panel">
+          <div class="panel__cabeza">
+            <h2 class="panel__titulo">Recursos disponibles</h2>
+            <span class="insignia">{{ recursos|length }}</span>
+          </div>
+
+          {% if recursos %}
+            {% for r in recursos %}
+            <div class="recurso">
+              <div class="recurso__icono {{ 'recurso__icono--video' if r.tipo == 'Video' }}{{ 'recurso__icono--audio' if r.tipo == 'Audio' }}">
+                {% if r.tipo == 'Video' %}{{ icono('video', 17) }}
+                {% elif r.tipo == 'Audio' %}{{ icono('audio', 17) }}
+                {% elif r.tipo == 'Lectura' %}{{ icono('libro', 17) }}
+                {% else %}{{ icono('documento', 17) }}{% endif %}
+              </div>
+              <div style="flex:1;min-width:0">
+                <strong>{{ r.titulo }}</strong>
+                {% if r.descripcion %}<p>{{ r.descripcion }}</p>{% endif %}
+                <div class="tarea__datos" style="margin-top:5px"><span>{{ r.tipo }}</span></div>
+              </div>
+              {% if r.enlace %}
+              <a href="{{ r.enlace }}" target="_blank" rel="noopener" class="boton boton--linea boton--sm">Abrir</a>
+              {% else %}
+              <span class="insignia insignia--arcilla">En físico</span>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="vacio">
+              <div class="vacio__icono">{{ icono('documento', 30) }}</div>
+              <p>Todavía no se ha publicado material.</p>
+            </div>
+          {% endif %}
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel">
+          <h2 class="panel__titulo" style="font-size:1.05rem;margin-bottom:14px">Plan de estudio</h2>
+          {% for n in niveles %}
+          <div class="anuncio">
+            <strong>{{ n.nombre }}</strong>
+            <p>{{ n.resumen }}</p>
+          </div>
+          {% endfor %}
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

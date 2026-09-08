@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+
+{% block titulo %}{{ iglesia.nombre }} — {{ iglesia.ciudad }}{% endblock %}
+
+{% block contenido %}
+
+<!-- ==================== PORTADA ==================== -->
+<section class="portada" id="inicio">
+  <div class="contenedor portada__grid">
+    <div>
+      <span class="portada__eyebrow">{{ iglesia.ciudad }}</span>
+      <h1>Comunidad Cristiana<br><em>Juan 3:16</em></h1>
+      <p class="portada__texto">
+        Una congregación que se reúne para estudiar la Biblia, orar y acompañarse.
+        Si nunca has venido, este es el lugar donde puedes conocer nuestros horarios,
+        quiénes somos y qué hacemos durante la semana.
+      </p>
+      <div class="portada__acciones">
+        <a href="#horarios" class="boton boton--principal">{{ icono('reloj', 17) }} Ver horarios de culto</a>
+        <a href="{{ url_for('estudio.informacion') }}" class="boton boton--linea">{{ icono('libro', 17) }} Estudio bíblico</a>
+      </div>
+      <div class="portada__datos">
+        <div class="portada__dato">
+          <strong>{{ cultos|length }}</strong>
+          <span>reuniones cada semana</span>
+        </div>
+        <div class="portada__dato">
+          <strong>{{ ministerios|length }}</strong>
+          <span>ministerios activos</span>
+        </div>
+        <div class="portada__dato">
+          <strong>3</strong>
+          <span>niveles de estudio bíblico</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta-versiculo">
+      <p class="tarjeta-versiculo__texto">{{ juan316.texto }}</p>
+      <div class="tarjeta-versiculo__pie">
+        <span class="tarjeta-versiculo__cita">{{ juan316.cita }}</span>
+        <span class="tarjeta-versiculo__version">{{ juan316.version }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== NUESTRA IGLESIA ==================== -->
+<section class="seccion" id="iglesia">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Nuestra iglesia</span>
+      <h2>Quiénes somos y en qué creemos</h2>
+      <p>
+        Somos una congregación cristiana evangélica. Nos reunimos para escuchar la enseñanza
+        de las Escrituras, orar juntos y sostenernos como comunidad. La iglesia toma su nombre
+        del pasaje de Juan 3:16, que resume lo que anunciamos.
+      </p>
+    </div>
+
+    <div class="rejilla rejilla--3 revelar" style="margin-bottom:72px">
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('libro', 22) }}</div>
+        <h3>La Biblia como centro</h3>
+        <p>Toda enseñanza se apoya en el texto bíblico, leído en su contexto. No enseñamos opiniones sueltas ni promesas de bienestar material.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('usuario', 22) }}</div>
+        <h3>Una comunidad real</h3>
+        <p>Niños, jóvenes, adultos y personas mayores comparten el mismo espacio. Nadie necesita cumplir requisitos para entrar y sentarse.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('corazon', 22) }}</div>
+        <h3>Servicio a la comunidad</h3>
+        <p>Acompañamos a familias del sector con apoyo concreto: alimentos, visitas y consejería.</p>
+      </article>
+    </div>
+
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Liderazgo pastoral</span>
+      <h2>Nuestros pastores</h2>
+      <p>Quienes acompañan a la congregación en la enseñanza, la consejería y la vida diaria de la iglesia.</p>
+    </div>
+
+    {% for p in pastores %}
+    <article class="pastor revelar">
+      <div class="pastor__foto">
+        <img src="{{ url_for('static', filename='img/pastores/' ~ p.foto) }}"
+             alt="Fotografía de {{ p.nombre }}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="pastor__sinfoto" style="display:none">
+          <strong>{{ p.nombre.split()[-1][0] if p.nombre.split()|length > 1 else p.nombre[0] }}</strong>
+          <span>Agrega la foto en<br>static/img/pastores/{{ p.foto }}</span>
+        </div>
+      </div>
+      <div class="pastor__cuerpo">
+        <span class="pastor__cargo">{{ p.cargo }}</span>
+        <h3 class="pastor__nombre">{{ p.nombre }}</h3>
+        <p class="pastor__resena">{{ p.resena }}</p>
+        <p class="pastor__enfasis">{{ p.enfasis }}</p>
+        <div class="pastor__meta">
+          <div>
+            <strong>{{ p.anios_servicio }} años</strong>
+            <span>en el ministerio pastoral</span>
+          </div>
+          {% if p.desde %}
+          <div>
+            <strong>Desde {{ p.desde }}</strong>
+            <span>sirviendo en esta congregación</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ==================== HORARIOS ==================== -->
+<section class="seccion seccion--arena" id="horarios">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Horarios y reuniones</span>
+      <h2>Cuándo nos reunimos</h2>
+      <p>No hace falta avisar ni inscribirse para asistir a los cultos.</p>
+    </div>
+
+    <div class="revelar">
+      {% for c in cultos %}
+      <article class="culto">
+        <div>
+          <div class="culto__dia">{{ c.dia }}</div>
+          <div class="culto__hora">{{ c.hora }}</div>
+        </div>
+        <div>
+          <h3 class="culto__nombre">{{ c.nombre }}</h3>
+          <p class="culto__desc">{{ c.descripcion }}</p>
+        </div>
+        <span class="insignia">{{ c.dirigido_a }}</span>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="tarjeta revelar" style="margin-top:28px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      <div class="dato-contacto__icono">{{ icono('lugar', 20) }}</div>
+      <div style="flex:1;min-width:220px">
+        <h4 style="margin-bottom:2px">Dónde estamos</h4>
+        <p style="margin:0;font-size:.93rem">{{ iglesia.direccion }} · {{ iglesia.ciudad }}</p>
+      </div>
+      <a href="#contacto" class="boton boton--linea boton--sm">Cómo llegar {{ icono('flecha', 15) }}</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CALENDARIO ==================== -->
+<section class="seccion" id="calendario">
+  <div class="contenedor">
+    <div class="encabezado-seccion encabezado-seccion--centro revelar">
+      <span class="etiqueta">Calendario</span>
+      <h2>El mes de un vistazo</h2>
+      <p>Las reuniones de cada semana y las fechas especiales, en un solo lugar.</p>
+    </div>
+
+    <div class="calendario revelar" id="calendario-publico">
+      <div class="calendario__barra">
+        <h3 class="calendario__mes" id="cal-mes">—</h3>
+        <div class="calendario__nav">
+          <button class="calendario__btn" id="cal-anterior" aria-label="Mes anterior">{{ icono('flecha-izq', 17) }}</button>
+          <button class="calendario__btn" id="cal-siguiente" aria-label="Mes siguiente">{{ icono('flecha', 17) }}</button>
+        </div>
+      </div>
+      <div class="calendario__cabeza">
+        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+      </div>
+      <div class="calendario__cuerpo" id="cal-cuerpo"></div>
+      <div class="calendario__leyenda">
+        <span><i class="punto punto--culto"></i> Reunión habitual</span>
+        <span><i class="punto"></i> Evento especial</span>
+        <span id="cal-detalle" style="margin-left:auto"></span>
+      </div>
+    </div>
+  </div>
+
+  {# Los datos del calendario se generan en el servidor y los dibuja el JS #}
+  <script type="application/json" id="datos-calendario">
+  {
+    "eventos": [
+      {% for e in eventos %}
+      {"fecha": "{{ e.fecha.strftime('%Y-%m-%d') }}", "titulo": {{ e.titulo|tojson }}, "hora": "{{ e.fecha|hora12 }}", "lugar": {{ e.lugar|tojson }}}{{ "," if not loop.last }}
+      {% endfor %}
+    ],
+    "cultos": [
+      {% for c in cultos %}
+      {"dia": {{ c.dia|tojson }}, "nombre": {{ c.nombre|tojson }}, "hora": {{ c.hora|tojson }}}{{ "," if not loop.last }}
+      {% endfor %}
+    ]
+  }
+  </script>
+</section>
+
+<!-- ==================== MINISTERIOS ==================== -->
+<section class="seccion seccion--arena" id="ministerios">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Ministerios</span>
+      <h2>Dónde puedes servir y participar</h2>
+      <p>Cada ministerio tiene un responsable a quien puedes acercarte para preguntar o sumarte.</p>
+    </div>
+
+    <div class="rejilla rejilla--3 revelar">
+      {% for m in ministerios %}
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ m.icono }}</div>
+        <h3>{{ m.nombre }}</h3>
+        <p>{{ m.descripcion }}</p>
+        {% if m.responsable %}<p class="ministerio__responsable">A cargo de {{ m.responsable }}</p>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EVENTOS ==================== -->
+<section class="seccion" id="eventos">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Eventos y actividades</span>
+      <h2>Lo que viene</h2>
+      <p>Fechas especiales fuera de las reuniones habituales. Se actualiza cada semana.</p>
+    </div>
+
+    {% if eventos %}
+    <div class="rejilla rejilla--2 revelar">
+      {% for e in eventos %}
+      <article class="tarjeta evento">
+        <div class="evento__fecha">
+          <strong>{{ e.fecha.day }}</strong>
+          <span>{{ e.fecha|mes_corto }}</span>
+        </div>
+        <div>
+          <h3 class="evento__titulo">{{ e.titulo }}</h3>
+          <div class="evento__meta">
+            <span>{{ e.fecha|dia_semana }} · {{ e.fecha|hora12 }}</span>
+            <span>{{ e.lugar }}</span>
+          </div>
+          <p class="evento__desc">{{ e.descripcion }}</p>
+          {% if e.destacado %}<span class="insignia insignia--terracota" style="margin-top:12px">Destacado</span>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="tarjeta vacio revelar">
+      <div class="vacio__icono">{{ icono('calendario', 30) }}</div>
+      <p>Por ahora no hay eventos programados. Los horarios habituales siguen normalmente.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ==================== ESTUDIO BÍBLICO (presentación) ==================== -->
+<section class="seccion seccion--arena" id="estudio">
+  <div class="contenedor">
+    <div class="bloque-estudio revelar">
+      <div class="bloque-estudio__grid">
+        <div>
+          <span class="etiqueta">Estudio bíblico y discipulado</span>
+          <h2>¿Quieres estudiar la Biblia con orden?</h2>
+          <p>
+            Un programa de formación dirigido por el pastor Isaí Sánchez, organizado en tres
+            niveles. Se trabaja directamente sobre el texto bíblico, con material de apoyo,
+            tareas semanales y acompañamiento personal.
+          </p>
+          <ul class="bloque-estudio__lista">
+            <li>Tres niveles: fundamentos, doctrina y servicio.</li>
+            <li>Clases presenciales y transmisión en vivo cuando aplica.</li>
+            <li>Aula en línea con el cronograma, las tareas y el material.</li>
+            <li>Cupo limitado: la inscripción se hace directamente con el pastor.</li>
+          </ul>
+          <div class="bloque-estudio__acciones">
+            <a href="{{ url_for('estudio.informacion') }}" class="boton boton--claro">
+              {{ icono('libro', 17) }} Conocer el estudio bíblico
+            </a>
+            <a href="{{ url_for('estudio.login') }}" class="boton boton--linea" style="color:#F2ECE4;border-color:rgba(242,236,228,.3)">
+              {{ icono('candado', 16) }} Ya soy estudiante
+            </a>
+          </div>
+        </div>
+
+        <div class="panel-acceso">
+          <h3>Próximas fechas</h3>
+          <p>Estas son las siguientes sesiones programadas.</p>
+          {% if proximas_clases %}
+            {% for c in proximas_clases %}
+            <div class="panel-acceso__fecha">
+              <strong>{{ c.fecha.day }} {{ c.fecha|mes_corto }}</strong>
+              <span>{{ c.titulo }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="panel-acceso__fecha"><span>Las fechas del próximo ciclo se publican pronto.</span></div>
+          {% endif %}
+          <a href="{{ wa('whatsapp_inscripcion', 'inscripcion') }}" target="_blank" rel="noopener"
+             class="boton boton--verde boton--bloque" style="margin-top:22px">
+            {{ icono('whatsapp', 17) }} Quiero inscribirme
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== OFRENDAS ==================== -->
+<section class="seccion" id="ofrendas">
+  <div class="contenedor">
+    <div class="encabezado-seccion encabezado-seccion--centro revelar">
+      <span class="etiqueta">Ofrendas y donaciones</span>
+      <h2>Cómo apoyar el trabajo de la iglesia</h2>
+      <p>{{ donaciones.intro }}</p>
+    </div>
+
+    <div class="rejilla rejilla--3 revelar">
+      {% for m in donaciones.medios %}
+      <article class="donacion">
+        <div class="donacion__tipo">{{ m.tipo }}</div>
+        <div class="donacion__entidad">{{ m.entidad }}</div>
+        <div class="donacion__numero">{{ m.numero }}</div>
+        <div class="donacion__titular">{{ m.titular }}</div>
+        {% if '0' in m.numero %}
+        <button class="boton boton--linea boton--sm donacion__copiar" data-copiar="{{ m.numero }}">
+          {{ icono('copiar', 15) }} Copiar
+        </button>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="versiculo revelar" style="margin-top:56px">
+      <p class="versiculo__texto">«{{ donaciones.versiculo.texto }}»</p>
+      <span class="versiculo__cita">{{ donaciones.versiculo.cita }}</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACTO ==================== -->
+<section class="seccion seccion--arena" id="contacto">
+  <div class="contenedor contacto__grid">
+    <div class="revelar">
+      <span class="etiqueta">Contacto</span>
+      <h2>Escríbenos</h2>
+      <p>Si quieres visitarnos, pedir oración o preguntar por el estudio bíblico, estos son nuestros canales.</p>
+
+      <div style="margin-top:28px">
+        <div class="dato-contacto">
+          <div class="dato-contacto__icono">{{ icono('lugar', 19) }}</div>
+          <div><strong>Dirección</strong><span>{{ iglesia.direccion }}<br>{{ iglesia.ciudad }}</span></div>
+        </div>
+        <div class="dato-contacto">
+          <div class="dato-contacto__icono">{{ icono('telefono', 19) }}</div>
+          <div><strong>Teléfono</strong><a href="tel:{{ iglesia.telefono | replace(' ', '') }}">{{ iglesia.telefono }}</a></div>
+        </div>
+        <div class="dato-contacto">
+          <div class="dato-contacto__icono">{{ icono('correo', 19) }}</div>
+          <div><strong>Correo</strong><a href="mailto:{{ iglesia.correo }}">{{ iglesia.correo }}</a></div>
+        </div>
+        <div class="dato-contacto">
+          <div class="dato-contacto__icono">{{ icono('whatsapp', 19) }}</div>
+          <div>
+            <strong>Línea de oración por WhatsApp</strong>
+            <a href="{{ wa('whatsapp_oracion', 'oracion') }}" target="_blank" rel="noopener">Escribir ahora</a>
+          </div>
+        </div>
+      </div>
+
+      {% if iglesia.mapa_embed %}
+      <div style="margin-top:26px;border-radius:var(--radio);overflow:hidden;border:1px solid var(--borde)">
+        <iframe src="{{ iglesia.mapa_embed }}" width="100%" height="260" style="border:0"
+                loading="lazy" title="Mapa de ubicación"></iframe>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="tarjeta revelar">
+      <h3>Envíanos un mensaje</h3>
+      <p style="font-size:.93rem">Respondemos por correo o por teléfono, según nos indiques.</p>
+
+      <form method="POST" action="{{ url_for('publico.contacto') }}" style="margin-top:22px">
+        <div class="campos-2">
+          <div class="campo">
+            <label for="nombre">Nombre *</label>
+            <input type="text" id="nombre" name="nombre" required maxlength="120" placeholder="Tu nombre">
+          </div>
+          <div class="campo">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" maxlength="40" placeholder="300 000 0000">
+          </div>
+        </div>
+        <div class="campo">
+          <label for="correo">Correo electrónico</label>
+          <input type="email" id="correo" name="correo" maxlength="120" placeholder="tucorreo@ejemplo.com">
+        </div>
+        <div class="campo">
+          <label for="asunto">Asunto</label>
+          <select id="asunto" name="asunto">
+            <option>Quiero visitar la iglesia</option>
+            <option>Información del estudio bíblico</option>
+            <option>Petición de oración</option>
+            <option>Ministerios y voluntariado</option>
+            <option>Consulta general</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="mensaje">Mensaje *</label>
+          <textarea id="mensaje" name="mensaje" required maxlength="2000" placeholder="Cuéntanos en qué podemos ayudarte"></textarea>
+        </div>
+        <button type="submit" class="boton boton--principal boton--bloque">
+          Enviar mensaje {{ icono('flecha', 16) }}
+        </button>
+        <p class="campo__ayuda" style="text-align:center;margin-top:12px">
+          Si prefieres algo inmediato, escríbenos por
+          <a href="{{ wa('whatsapp_oracion', 'general') }}" target="_blank" rel="noopener">WhatsApp</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

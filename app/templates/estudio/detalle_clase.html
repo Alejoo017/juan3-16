@@ -1,0 +1,81 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+{% block titulo %}{{ clase.titulo }} — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+<div class="aula__cuerpo">
+  <div class="contenedor contenedor-estrecho">
+
+    <a href="{{ url_for('estudio.lista_clases') }}" class="enlace-volver">
+      {{ icono('flecha-izq', 15) }} Volver al cronograma
+    </a>
+
+    <section class="panel">
+      <div class="clase-proxima__meta" style="margin-bottom:14px">
+        <span class="insignia">{{ clase.fecha|fecha_larga }} · {{ clase.fecha|hora12 }}</span>
+        <span class="insignia {% if clase.modalidad == 'Virtual' %}insignia--azul{% elif clase.modalidad == 'Mixta' %}insignia--arcilla{% endif %}">{{ clase.modalidad }}</span>
+        <span class="insignia insignia--terracota">{{ clase.nivel }}</span>
+      </div>
+
+      <h1 style="font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:12px">{{ clase.titulo }}</h1>
+      {% if clase.tema %}<p style="color:var(--terracota-osc);font-weight:600;font-size:.9rem">{{ clase.tema }}</p>{% endif %}
+      {% if clase.descripcion %}<p style="font-size:1.02rem">{{ clase.descripcion }}</p>{% endif %}
+
+      <div class="pastor__meta" style="margin-top:22px">
+        <div><strong style="font-size:1rem">{{ clase.lugar or 'Por confirmar' }}</strong><span>Lugar</span></div>
+        <div><strong style="font-size:1rem">{{ clase.duracion_min }} min</strong><span>Duración estimada</span></div>
+      </div>
+
+      <div class="acciones-clase">
+        {% if clase.enlace %}
+        <a href="{{ clase.enlace }}" target="_blank" rel="noopener" class="boton boton--principal">
+          {{ icono('video', 17) }} Entrar a la clase
+        </a>
+        <button class="boton boton--linea" data-copiar="{{ clase.enlace }}">{{ icono('copiar', 15) }} Copiar enlace</button>
+        {% elif clase.modalidad != 'Presencial' %}
+        <span class="sin-enlace">{{ icono('reloj', 15) }} El enlace se publica el día de la clase</span>
+        {% endif %}
+      </div>
+
+      {% if current_user.es_admin %}
+      <form method="POST" action="{{ url_for('admin.guardar_enlace', clase_id=clase.id) }}"
+            style="margin-top:22px;padding-top:20px;border-top:1px dashed var(--borde);display:flex;gap:10px;flex-wrap:wrap">
+        <input type="url" name="enlace" value="{{ clase.enlace or '' }}" placeholder="https://meet.google.com/..."
+               style="flex:1;min-width:240px;padding:11px 14px;border:1.5px solid var(--borde);border-radius:var(--radio-sm);font-family:var(--sans)">
+        <button class="boton boton--verde boton--sm">Guardar enlace</button>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel__cabeza">
+        <div>
+          <h2 class="panel__titulo">Tareas de esta clase</h2>
+          <p class="panel__sub">{{ clase.tareas|length }} en total</p>
+        </div>
+      </div>
+
+      {% if clase.tareas %}
+        {% for t in clase.tareas %}
+        <div class="tarea" data-tarea="{{ t.id }}">
+          <button class="tarea__marca" aria-label="Marcar como hecha">{{ icono('chequeo', 13) }}</button>
+          <div class="tarea__cuerpo">
+            <strong>{{ t.titulo }}</strong>
+            {% if t.descripcion %}<p>{{ t.descripcion }}</p>{% endif %}
+            <div class="tarea__datos">
+              {% if t.cita_biblica %}<span>{{ icono('libro', 13) }} {{ t.cita_biblica }}</span>{% endif %}
+              {% if t.fecha_entrega %}<span>{{ icono('calendario', 13) }} Entrega: {{ t.fecha_entrega|fecha_corta }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="vacio"><p>Esta clase no tiene tareas asignadas.</p></div>
+      {% endif %}
+    </section>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}<script src="{{ url_for('static', filename='js/aula.js') }}"></script>{% endblock %}

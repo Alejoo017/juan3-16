@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+
+{% block titulo %}Estudio bíblico — {{ iglesia.nombre }}{% endblock %}
+{% block descripcion %}Programa de estudio bíblico y discipulado de la Comunidad Cristiana Juan 3:16: temas, niveles, próximas fechas e inscripción.{% endblock %}
+
+{% block css_extra %}<link rel="stylesheet" href="{{ url_for('static', filename='css/aula.css') }}">{% endblock %}
+
+{% block contenido %}
+
+<!-- ==================== PORTADA DEL ESTUDIO ==================== -->
+<section class="portada" style="padding-top:72px">
+  <div class="contenedor portada__grid">
+    <div>
+      <span class="portada__eyebrow">Formación bíblica</span>
+      <h1>Estudio bíblico y <em>discipulado</em></h1>
+      <p class="portada__texto">
+        Un recorrido ordenado por las Escrituras, dirigido por el pastor Isaí Sánchez.
+        Está pensado tanto para quien empieza de cero como para quien lleva años en la
+        iglesia y quiere entender con más profundidad lo que cree.
+      </p>
+      <div class="portada__acciones">
+        <a href="#inscripcion" class="boton boton--principal">{{ icono('whatsapp', 17) }} Quiero inscribirme</a>
+        <a href="{{ url_for('estudio.login') }}" class="boton boton--linea">{{ icono('candado', 16) }} Acceder a mi cuenta</a>
+      </div>
+      <div class="portada__datos">
+        <div class="portada__dato"><strong>3</strong><span>niveles</span></div>
+        <div class="portada__dato"><strong>Viernes</strong><span>7:00 p. m.</span></div>
+        <div class="portada__dato"><strong>90 min</strong><span>por sesión</span></div>
+      </div>
+    </div>
+
+    <div class="tarjeta-versiculo">
+      <p class="tarjeta-versiculo__texto">
+        Procura con diligencia presentarte a Dios aprobado, como obrero que no tiene de qué
+        avergonzarse, que usa bien la palabra de verdad.
+      </p>
+      <div class="tarjeta-versiculo__pie">
+        <span class="tarjeta-versiculo__cita">2 Timoteo 2:15</span>
+        <span class="tarjeta-versiculo__version">RVR 1960</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EN QUÉ CONSISTE ==================== -->
+<section class="seccion" id="curso">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Información del curso</span>
+      <h2>En qué consiste</h2>
+      <p>
+        Las clases son presenciales en el salón de estudio de la iglesia. Cuando una sesión se
+        transmite en vivo, el enlace aparece en el aula de cada estudiante el mismo día.
+      </p>
+    </div>
+
+    <div class="rejilla rejilla--4 revelar">
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('calendario', 21) }}</div>
+        <h4>Una sesión por semana</h4>
+        <p style="font-size:.92rem">Viernes a las 7:00 p. m., con una duración aproximada de 90 minutos.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('documento', 21) }}</div>
+        <h4>Material de apoyo</h4>
+        <p style="font-size:.92rem">Guía impresa por nivel y material digital disponible en el aula.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('chequeo', 21) }}</div>
+        <h4>Tareas semanales</h4>
+        <p style="font-size:.92rem">Lecturas y ejercicios cortos que se revisan al comenzar la clase siguiente.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">{{ icono('usuario', 21) }}</div>
+        <h4>Acompañamiento</h4>
+        <p style="font-size:.92rem">Espacio para preguntas y seguimiento personal con el pastor.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TEMAS Y NIVELES ==================== -->
+<section class="seccion seccion--arena" id="temas">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Temas y niveles</span>
+      <h2>El recorrido completo</h2>
+      <p>Cada nivel se cursa por separado. Todos comienzan por el Nivel 1, sin excepción.</p>
+    </div>
+
+    <div class="rejilla rejilla--3 revelar">
+      {% for n in niveles %}
+      <article class="tarjeta">
+        <span class="insignia insignia--terracota">{{ loop.index }}</span>
+        <h3 style="margin-top:16px">{{ n.nombre }}</h3>
+        <p>{{ n.resumen }}</p>
+        <ul style="margin-top:18px;display:grid;gap:9px">
+          {% for t in n.temas %}
+          <li style="display:flex;gap:10px;font-size:.9rem;color:var(--texto-medio)">
+            <span style="color:var(--terracota)">—</span>{{ t }}
+          </li>
+          {% endfor %}
+        </ul>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PRÓXIMAS FECHAS (máximo 3) ==================== -->
+<section class="seccion" id="fechas">
+  <div class="contenedor contenedor-estrecho">
+    <div class="encabezado-seccion encabezado-seccion--centro revelar">
+      <span class="etiqueta">Próximas fechas</span>
+      <h2>Las siguientes sesiones</h2>
+      <p>Mostramos únicamente las próximas tres. El cronograma completo está dentro del aula.</p>
+    </div>
+
+    {% if proximas %}
+    <div class="revelar">
+      {% for c in proximas %}
+      <article class="culto" style="grid-template-columns:74px 1fr auto">
+        <div class="evento__fecha">
+          <strong>{{ c.fecha.day }}</strong>
+          <span>{{ c.fecha|mes_corto }}</span>
+        </div>
+        <div>
+          <h3 class="culto__nombre">{{ c.titulo }}</h3>
+          <p class="culto__desc">{{ c.fecha|dia_semana }} · {{ c.fecha|hora12 }} · {{ c.nivel }}</p>
+        </div>
+        <span class="insignia {% if c.modalidad == 'Virtual' %}insignia--azul{% elif c.modalidad == 'Mixta' %}insignia--arcilla{% endif %}">
+          {{ c.modalidad }}
+        </span>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="tarjeta vacio revelar">
+      <div class="vacio__icono">{{ icono('calendario', 30) }}</div>
+      <p>Aún no hay fechas publicadas para el próximo ciclo. Escríbenos y te avisamos cuando abramos inscripciones.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ==================== CÓMO INSCRIBIRSE ==================== -->
+<section class="seccion seccion--arena" id="inscripcion">
+  <div class="contenedor">
+    <div class="encabezado-seccion revelar">
+      <span class="etiqueta">Cómo inscribirse</span>
+      <h2>Tres pasos</h2>
+      <p>La inscripción es personal: no hay formulario automático. Así podemos conocer a cada estudiante antes de empezar.</p>
+    </div>
+
+    <div class="rejilla rejilla--3 revelar" style="margin-bottom:36px">
+      <article class="tarjeta">
+        <div class="ministerio__icono">1</div>
+        <h4>Escribe al pastor</h4>
+        <p style="font-size:.93rem">Envía un mensaje por WhatsApp indicando tu nombre completo y si ya asistes a la iglesia.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">2</div>
+        <h4>Conversación breve</h4>
+        <p style="font-size:.93rem">Se acuerda el nivel con el que empiezas y se confirma el cupo del ciclo.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="ministerio__icono">3</div>
+        <h4>Recibes tu acceso</h4>
+        <p style="font-size:.93rem">La administración te entrega en privado tu usuario y contraseña del aula.</p>
+      </article>
+    </div>
+
+    <div class="tarjeta revelar" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:32px">
+      <div style="flex:1;min-width:260px">
+        <h3 style="margin-bottom:6px">¿Listo para empezar?</h3>
+        <p style="margin:0">Escribe directamente al pastor Isaí Sánchez para reservar tu cupo.</p>
+      </div>
+      <a href="{{ wa('whatsapp_inscripcion', 'inscripcion') }}" target="_blank" rel="noopener" class="boton boton--verde">
+        {{ icono('whatsapp', 18) }} Escribir por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ACCESO PARA ESTUDIANTES ==================== -->
+<section class="seccion" id="acceso">
+  <div class="contenedor">
+    <div class="bloque-estudio revelar">
+      <div class="bloque-estudio__grid">
+        <div>
+          <span class="etiqueta">Acceso para estudiantes</span>
+          <h2>¿Ya eres estudiante?</h2>
+          <p>
+            Dentro del aula encuentras el cronograma de clases, las tareas de cada sesión,
+            el enlace de las clases virtuales, el material de apoyo y los avisos de la
+            administración.
+          </p>
+          <p style="font-size:.92rem">
+            El acceso es únicamente para personas inscritas de manera oficial. Las credenciales
+            las entrega la administración en privado; no se generan desde el sitio.
+          </p>
+          <div class="bloque-estudio__acciones">
+            <a href="{{ url_for('estudio.login') }}" class="boton boton--claro">
+              {{ icono('candado', 17) }} Acceder a mi cuenta
+            </a>
+            <a href="{{ wa('whatsapp_admin', 'acceso') }}" target="_blank" rel="noopener"
+               class="boton boton--linea" style="color:#F2ECE4;border-color:rgba(242,236,228,.3)">
+              Perdí mi contraseña
+            </a>
+          </div>
+        </div>
+
+        <div class="panel-acceso">
+          <h3>Qué hay dentro del aula</h3>
+          <div class="panel-acceso__fecha"><strong>Calendario</strong><span>Las clases del mes</span></div>
+          <div class="panel-acceso__fecha"><strong>Próximas</strong><span>Las 2 siguientes sesiones</span></div>
+          <div class="panel-acceso__fecha"><strong>Tareas</strong><span>Lo que debes preparar</span></div>
+          <div class="panel-acceso__fecha"><strong>Enlace</strong><span>De la clase virtual</span></div>
+          <div class="panel-acceso__fecha"><strong>Material</strong><span>Guías, lecturas y videos</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

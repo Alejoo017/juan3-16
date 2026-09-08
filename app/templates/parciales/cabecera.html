@@ -1,0 +1,26 @@
+{% from 'parciales/iconos.html' import icono, marca with context %}
+<header class="cabecera" id="cabecera">
+  <div class="contenedor cabecera__interior">
+    {{ marca() }}
+
+    <nav class="menu" id="menu">
+      <a href="{{ url_for('publico.inicio') }}#inicio">Inicio</a>
+      <a href="{{ url_for('publico.inicio') }}#iglesia">Nuestra iglesia</a>
+      <a href="{{ url_for('publico.inicio') }}#horarios">Horarios</a>
+      <a href="{{ url_for('publico.inicio') }}#calendario">Calendario</a>
+      <a href="{{ url_for('publico.inicio') }}#ministerios">Ministerios</a>
+      <a href="{{ url_for('publico.inicio') }}#eventos">Eventos</a>
+      <a href="{{ url_for('estudio.informacion') }}">Estudio bíblico</a>
+      <a href="{{ url_for('publico.inicio') }}#contacto">Contacto</a>
+    </nav>
+
+    <div class="cabecera__acciones">
+      <a href="{{ url_for('estudio.login') }}" class="boton boton--principal boton--sm">
+        {{ icono('candado', 16) }} <span class="texto-boton">Acceder</span>
+      </a>
+      <button class="hamburguesa" id="hamburguesa" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ iglesia.nombre }}{% endblock %}</title>
+  <meta name="description" content="{% block descripcion %}{{ iglesia.nombre }} — horarios de culto, ministerios, eventos y programa de estudio bíblico.{% endblock %}">
+  <meta name="theme-color" content="#FCFAF7">
+
+  <link rel="icon" href="{{ url_for('static', filename='img/logo/logo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  {% block css_extra %}{% endblock %}
+</head>
+<body class="{% block clase_body %}{% endblock %}">
+
+{% block cabecera %}{% include 'parciales/cabecera.html' %}{% endblock %}
+
+{# --- Mensajes flash: los envía el backend con flash('texto', 'categoria') --- #}
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div class="avisos" id="avisos">
+    {% for categoria, texto in mensajes %}
+      <div class="aviso aviso--{{ categoria }}">
+        <span>{{ texto }}</span>
+        <button class="aviso__cerrar" aria-label="Cerrar aviso">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<main>{% block contenido %}{% endblock %}</main>
+
+{% block pie %}{% include 'parciales/pie.html' %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/principal.js') }}"></script>
+{% block js_extra %}{% endblock %}
+</body>
+</html>

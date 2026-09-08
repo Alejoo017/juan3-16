@@ -1,0 +1,220 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+
+{% block titulo %}Mi aula — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+{% set meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'] %}
+
+<div class="aula__cuerpo">
+  <div class="contenedor">
+
+    <div class="aula__saludo">
+      <h1>Hola, {{ current_user.primer_nombre }}</h1>
+      <p>Este es tu espacio del estudio bíblico. Aquí ves lo que viene y lo que debes preparar.</p>
+    </div>
+
+    <div class="aula__grid">
+
+      <!-- ===== Columna principal ===== -->
+      <div>
+        <section class="panel">
+          <div class="panel__cabeza">
+            <div>
+              <h2 class="panel__titulo">Próximas clases</h2>
+              <p class="panel__sub">Las dos siguientes sesiones del programa</p>
+            </div>
+            <a href="{{ url_for('estudio.lista_clases') }}" class="boton boton--linea boton--sm">
+              Ver todo {{ icono('flecha', 14) }}
+            </a>
+          </div>
+
+          {% if proximas %}
+            {% for c in proximas %}
+            <article class="clase-proxima {{ 'clase-proxima--siguiente' if loop.first }}">
+              {% if loop.first %}
+                <span class="cuenta-regresiva">
+                  {% if c.dias_faltantes == 0 %}Es hoy
+                  {% elif c.dias_faltantes == 1 %}Es mañana
+                  {% else %}En {{ c.dias_faltantes }} días{% endif %}
+                </span>
+              {% endif %}
+
+              <div class="clase-proxima__top">
+                <div class="clase-proxima__fecha">
+                  <strong>{{ c.fecha.day }}</strong>
+                  <span>{{ c.fecha|mes_corto }}</span>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <h3 class="clase-proxima__titulo">{{ c.titulo }}</h3>
+                  <div class="clase-proxima__meta">
+                    <span class="insignia">{{ c.fecha|dia_semana }} · {{ c.fecha|hora12 }}</span>
+                    <span class="insignia {% if c.modalidad == 'Virtual' %}insignia--azul{% elif c.modalidad == 'Mixta' %}insignia--arcilla{% endif %}">{{ c.modalidad }}</span>
+                    {% if c.tema %}<span class="insignia insignia--terracota">{{ c.tema }}</span>{% endif %}
+                  </div>
+                  {% if c.descripcion %}<p class="clase-proxima__desc">{{ c.descripcion }}</p>{% endif %}
+                  {% if c.lugar %}<p class="clase-proxima__desc" style="color:var(--texto-suave);font-size:.86rem;margin-top:6px">{{ c.lugar }}</p>{% endif %}
+                </div>
+              </div>
+
+              {% if c.tareas %}
+              <div class="tareas">
+                <div class="tareas__titulo">Para preparar ({{ c.tareas|length }})</div>
+                {% for t in c.tareas %}
+                <div class="tarea" data-tarea="{{ t.id }}">
+                  <button class="tarea__marca" title="Marcar como hecha" aria-label="Marcar tarea como hecha">
+                    {{ icono('chequeo', 13) }}
+                  </button>
+                  <div class="tarea__cuerpo">
+                    <strong>{{ t.titulo }}</strong>
+                    {% if t.descripcion %}<p>{{ t.descripcion }}</p>{% endif %}
+                    <div class="tarea__datos">
+                      {% if t.cita_biblica %}<span>{{ icono('libro', 13) }} {{ t.cita_biblica }}</span>{% endif %}
+                      {% if t.fecha_entrega %}<span>{{ icono('calendario', 13) }} Entrega: {{ t.fecha_entrega|fecha_corta }}</span>{% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <div class="acciones-clase">
+                {% if c.enlace %}
+                  <a href="{{ c.enlace }}" target="_blank" rel="noopener" class="boton boton--principal boton--sm">
+                    {{ icono('video', 16) }} Entrar a la clase
+                  </a>
+                {% elif c.modalidad != 'Presencial' %}
+                  <span class="sin-enlace">{{ icono('reloj', 15) }} El enlace se publica el día de la clase</span>
+                {% endif %}
+                <a href="{{ url_for('estudio.detalle_clase', clase_id=c.id) }}" class="boton boton--linea boton--sm">
+                  Ver detalle
+                </a>
+                {% if current_user.es_admin %}
+                <a href="{{ url_for('admin.panel', seccion='clases') }}" class="boton boton--linea boton--sm">
+                  {{ icono('lapiz', 14) }} Editar
+                </a>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          {% else %}
+            <div class="vacio">
+              <div class="vacio__icono">{{ icono('calendario', 30) }}</div>
+              <p>No hay clases programadas por ahora.<br>Cuando se publique el próximo ciclo aparecerá aquí.</p>
+            </div>
+          {% endif %}
+        </section>
+
+        <!-- Material de apoyo -->
+        <section class="panel">
+          <div class="panel__cabeza">
+            <div>
+              <h2 class="panel__titulo">Material de apoyo</h2>
+              <p class="panel__sub">Guías, lecturas y recursos del programa</p>
+            </div>
+            <a href="{{ url_for('estudio.lista_recursos') }}" class="boton boton--linea boton--sm">
+              Ver todo {{ icono('flecha', 14) }}
+            </a>
+          </div>
+
+          {% if recursos %}
+            {% for r in recursos[:4] %}
+            <div class="recurso">
+              <div class="recurso__icono {{ 'recurso__icono--video' if r.tipo == 'Video' }}{{ 'recurso__icono--audio' if r.tipo == 'Audio' }}">
+                {% if r.tipo == 'Video' %}{{ icono('video', 17) }}
+                {% elif r.tipo == 'Audio' %}{{ icono('audio', 17) }}
+                {% elif r.tipo == 'Lectura' %}{{ icono('libro', 17) }}
+                {% else %}{{ icono('documento', 17) }}{% endif %}
+              </div>
+              <div style="flex:1;min-width:0">
+                <strong>{{ r.titulo }}</strong>
+                {% if r.descripcion %}<p>{{ r.descripcion }}</p>{% endif %}
+              </div>
+              {% if r.enlace %}
+              <a href="{{ r.enlace }}" target="_blank" rel="noopener" class="boton-icono" title="Abrir">{{ icono('enlace', 16) }}</a>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="vacio"><p>Todavía no se ha publicado material.</p></div>
+          {% endif %}
+        </section>
+      </div>
+
+      <!-- ===== Columna lateral ===== -->
+      <aside>
+        <!-- Calendario -->
+        <section class="panel">
+          <div class="panel__cabeza" style="margin-bottom:16px">
+            <h2 class="panel__titulo" style="font-size:1.05rem;text-transform:capitalize">
+              {{ meses[mes-1] }} {{ anio }}
+            </h2>
+            <div class="calendario__nav">
+              <a href="{{ url_for('estudio.aula', anio=mes_ant[0], mes=mes_ant[1]) }}"
+                 class="calendario__btn" aria-label="Mes anterior">{{ icono('flecha-izq', 15) }}</a>
+              <a href="{{ url_for('estudio.aula', anio=mes_sig[0], mes=mes_sig[1]) }}"
+                 class="calendario__btn" aria-label="Mes siguiente">{{ icono('flecha', 15) }}</a>
+            </div>
+          </div>
+
+          <div class="mini-cal__cabeza">
+            <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+          </div>
+          <div class="mini-cal__cuerpo">
+            {% for semana in semanas %}
+              {% for d in semana %}
+                {% if d.clases %}
+                  <div class="mini-dia mini-dia--clase" title="{{ d.clases[0].titulo }}">
+                    <a href="{{ url_for('estudio.detalle_clase', clase_id=d.clases[0].id) }}">{{ d.dia }}</a>
+                  </div>
+                {% else %}
+                  <div class="mini-dia {{ 'mini-dia--fuera' if not d.del_mes }} {{ 'mini-dia--hoy' if d.hoy }}">
+                    {{ d.dia }}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </div>
+
+          <div class="mini-cal__pie">
+            <span><i class="cuadro-color"></i> Clase</span>
+            <span><i class="cuadro-color cuadro-color--hoy"></i> Hoy</span>
+          </div>
+        </section>
+
+        <!-- Avisos -->
+        <section class="panel">
+          <div class="panel__cabeza" style="margin-bottom:8px">
+            <h2 class="panel__titulo" style="font-size:1.05rem">Avisos</h2>
+            {{ icono('campana', 18) }}
+          </div>
+
+          {% if anuncios %}
+            {% for a in anuncios %}
+            <div class="anuncio">
+              <strong>{% if a.fijado %}<span class="chincheta">◆</span> {% endif %}{{ a.titulo }}</strong>
+              <p>{{ a.contenido }}</p>
+              <span class="anuncio__fecha">{{ a.creado_en|fecha_corta }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="vacio" style="padding:24px 10px"><p>No hay avisos nuevos.</p></div>
+          {% endif %}
+        </section>
+
+        <!-- Ayuda -->
+        <section class="panel" style="background:var(--arena);border-color:var(--borde)">
+          <h2 class="panel__titulo" style="font-size:1.05rem;margin-bottom:8px">¿Necesitas ayuda?</h2>
+          <p style="font-size:.9rem">Si algo no te carga, perdiste una clase o tienes dudas del material, escribe a la administración.</p>
+          <a href="{{ wa('whatsapp_admin', 'acceso') }}" target="_blank" rel="noopener"
+             class="boton boton--verde boton--bloque boton--sm">
+            {{ icono('whatsapp', 15) }} Escribir por WhatsApp
+          </a>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}<script src="{{ url_for('static', filename='js/aula.js') }}"></script>{% endblock %}

@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Iglesia Juan 3:16 — solo yo (127.0.0.1:5001)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": { "PORT": "5001" }
+    },
+    {
+      "name": "Iglesia Juan 3:16 — prueba con personas (Wi-Fi)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/arrancar_pruebas.py",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

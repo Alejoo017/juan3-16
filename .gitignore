@@ -1,0 +1,46 @@
+# ===========================================================================
+#  Archivos que NUNCA deben subir a GitHub
+#  (Git no admite comentarios en la misma línea del patrón:
+#   deben ir siempre en su propia línea)
+# ===========================================================================
+
+# --- Datos privados y credenciales ---------------------------------------
+# config.py tiene SECRET_KEY, WhatsApp y cuentas bancarias reales
+config.py
+# Manual interno con las contraseñas de administración
+MANUAL-INTERNO.md
+CREDENCIALES.md
+
+# --- Base de datos --------------------------------------------------------
+# Contiene personas reales, hashes de contraseñas y mensajes de contacto
+instance/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+
+# --- Entorno virtual (21 MB, se regenera con pip install) -----------------
+venv/
+env/
+.venv/
+
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Sistema operativo ----------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# --- Editores -------------------------------------------------------------
+.idea/
+*.swp
+
+# --- Fotografías de los pastores ------------------------------------------
+# Quita el "#" de las dos líneas siguientes si prefieres NO publicar
+# las fotos de personas reales en un repositorio público.
+# app/static/img/pastores/*.jpg
+# app/static/img/pastores/*.png

@@ -1,0 +1,594 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+{% block titulo %}Administración — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+{% set niveles_opts = ['Nivel 1', 'Nivel 2', 'Nivel 3'] %}
+
+<div class="aula__cuerpo">
+  <div class="contenedor">
+
+    <div class="aula__saludo">
+      <h1>Administración</h1>
+      <p>Desde aquí se actualiza todo lo que ven los estudiantes y la página principal.</p>
+    </div>
+
+    <nav class="pestanas">
+      <a href="{{ url_for('admin.panel', seccion='clases') }}"      class="{{ 'activo' if seccion == 'clases' }}">Clases y tareas</a>
+      <a href="{{ url_for('admin.panel', seccion='avisos') }}"      class="{{ 'activo' if seccion == 'avisos' }}">Avisos</a>
+      <a href="{{ url_for('admin.panel', seccion='material') }}"    class="{{ 'activo' if seccion == 'material' }}">Material</a>
+      <a href="{{ url_for('admin.panel', seccion='estudiantes') }}" class="{{ 'activo' if seccion == 'estudiantes' }}">Estudiantes</a>
+      <a href="{{ url_for('admin.panel', seccion='eventos') }}"     class="{{ 'activo' if seccion == 'eventos' }}">Eventos públicos</a>
+      <a href="{{ url_for('admin.panel', seccion='mensajes') }}"    class="{{ 'activo' if seccion == 'mensajes' }}">
+        Mensajes{% if sin_leer %}<span class="globo">{{ sin_leer }}</span>{% endif %}
+      </a>
+    </nav>
+
+    {# ==================== CLASES ==================== #}
+    {% if seccion == 'clases' %}
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 class="panel__titulo" style="font-size:1.1rem;margin-bottom:16px">Nueva clase</h2>
+        <form method="POST" action="{{ url_for('admin.guardar_clase') }}">
+          <div class="campo">
+            <label for="titulo">Título de la clase *</label>
+            <input type="text" id="titulo" name="titulo" required placeholder="Ej. La autoridad de las Escrituras">
+          </div>
+          <div class="campo">
+            <label for="tema">Tema o módulo</label>
+            <input type="text" id="tema" name="tema" placeholder="Ej. Fundamentos · Bibliología">
+          </div>
+          <div class="campo">
+            <label for="fecha">Fecha y hora *</label>
+            <input type="datetime-local" id="fecha" name="fecha" required>
+          </div>
+          <div class="campos-2">
+            <div class="campo">
+              <label for="modalidad">Modalidad</label>
+              <select id="modalidad" name="modalidad">
+                <option>Presencial</option><option>Virtual</option><option>Mixta</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="nivel">Nivel</label>
+              <select id="nivel" name="nivel">
+                {% for n in niveles_opts %}<option>{{ n }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="lugar">Lugar</label>
+            <input type="text" id="lugar" name="lugar" value="Salón de estudio, segundo piso">
+          </div>
+          <div class="campo">
+            <label for="enlace">Enlace de la clase</label>
+            <input type="url" id="enlace" name="enlace" placeholder="https://meet.google.com/...">
+            <p class="campo__ayuda">Puedes dejarlo vacío y pegarlo después, el mismo día.</p>
+          </div>
+          <div class="campo">
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" name="descripcion" style="min-height:90px"
+                      placeholder="Qué se verá en esta sesión"></textarea>
+          </div>
+          <label style="display:flex;gap:9px;align-items:center;font-size:.88rem;margin-bottom:18px;cursor:pointer">
+            <input type="checkbox" name="publicada" value="1" checked style="width:auto;margin:0">
+            Visible para los estudiantes
+          </label>
+          <button class="boton boton--principal boton--bloque">{{ icono('mas', 16) }} Crear clase</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel__cabeza">
+          <div>
+            <h2 class="panel__titulo">Clases programadas</h2>
+            <p class="panel__sub">{{ clases|length }} en total · pulsa una para editarla o agregar tareas</p>
+          </div>
+        </div>
+
+        {% for c in clases %}
+        <details class="detalle-plegable">
+          <summary>
+            <div class="clase-proxima__fecha" style="width:62px;padding:8px 4px">
+              <strong style="font-size:1.3rem">{{ c.fecha.day }}</strong>
+              <span>{{ c.fecha|mes_corto }}</span>
+            </div>
+            <div class="fila-admin__cuerpo">
+              <strong>{{ c.titulo }}</strong>
+              <div class="fila-admin__meta">
+                <span>{{ c.fecha|hora12 }}</span>
+                <span>{{ c.modalidad }}</span>
+                <span>{{ c.tareas|length }} tarea(s)</span>
+                {% if c.enlace %}<span style="color:var(--salvia)">Con enlace</span>{% else %}<span>Sin enlace</span>{% endif %}
+                {% if not c.publicada %}<span style="color:var(--terracota)">Oculta</span>{% endif %}
+              </div>
+            </div>
+          </summary>
+
+          <div class="detalle-plegable__cuerpo">
+            <!-- Editar clase -->
+            <form method="POST" action="{{ url_for('admin.guardar_clase') }}" style="margin-bottom:22px">
+              <input type="hidden" name="clase_id" value="{{ c.id }}">
+              <div class="campos-2">
+                <div class="campo">
+                  <label>Título</label>
+                  <input type="text" name="titulo" value="{{ c.titulo }}" required>
+                </div>
+                <div class="campo">
+                  <label>Fecha y hora</label>
+                  <input type="datetime-local" name="fecha" value="{{ c.fecha|input_fecha }}" required>
+                </div>
+              </div>
+              <div class="campos-2">
+                <div class="campo">
+                  <label>Modalidad</label>
+                  <select name="modalidad">
+                    {% for m in ['Presencial','Virtual','Mixta'] %}
+                    <option {{ 'selected' if c.modalidad == m }}>{{ m }}</option>{% endfor %}
+                  </select>
+                </div>
+                <div class="campo">
+                  <label>Nivel</label>
+                  <select name="nivel">
+                    {% for n in niveles_opts %}<option {{ 'selected' if c.nivel == n }}>{{ n }}</option>{% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="campo">
+                <label>Tema</label>
+                <input type="text" name="tema" value="{{ c.tema or '' }}">
+              </div>
+              <div class="campo">
+                <label>Lugar</label>
+                <input type="text" name="lugar" value="{{ c.lugar or '' }}">
+              </div>
+              <div class="campo">
+                <label>{{ icono('enlace', 14) }} Enlace de la clase</label>
+                <input type="url" name="enlace" value="{{ c.enlace or '' }}" placeholder="https://...">
+              </div>
+              <div class="campo">
+                <label>Descripción</label>
+                <textarea name="descripcion" style="min-height:80px">{{ c.descripcion or '' }}</textarea>
+              </div>
+              <input type="hidden" name="duracion_min" value="{{ c.duracion_min }}">
+              <label style="display:flex;gap:9px;align-items:center;font-size:.88rem;margin-bottom:16px;cursor:pointer">
+                <input type="checkbox" name="publicada" value="1" {{ 'checked' if c.publicada }} style="width:auto;margin:0">
+                Visible para los estudiantes
+              </label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="boton boton--principal boton--sm">Guardar cambios</button>
+              </div>
+            </form>
+
+            <!-- Tareas de esta clase -->
+            <div style="border-top:1px dashed var(--borde);padding-top:18px">
+              <div class="tareas__titulo">Tareas de esta clase</div>
+
+              {% for t in c.tareas %}
+              <div class="fila-admin">
+                <div class="fila-admin__cuerpo">
+                  <strong>{{ t.titulo }}</strong>
+                  <div class="fila-admin__meta">
+                    {% if t.cita_biblica %}<span>{{ t.cita_biblica }}</span>{% endif %}
+                    {% if t.fecha_entrega %}<span>Entrega {{ t.fecha_entrega|fecha_corta }}</span>{% endif %}
+                  </div>
+                </div>
+                <form method="POST" action="{{ url_for('admin.eliminar_tarea', tarea_id=t.id) }}"
+                      onsubmit="return confirm('¿Eliminar esta tarea?')">
+                  <button class="boton-icono boton-icono--peligro" title="Eliminar">{{ icono('basura', 15) }}</button>
+                </form>
+              </div>
+              {% else %}
+              <p style="font-size:.88rem;color:var(--texto-suave)">Esta clase todavía no tiene tareas.</p>
+              {% endfor %}
+
+              <form method="POST" action="{{ url_for('admin.crear_tarea', clase_id=c.id) }}"
+                    style="margin-top:16px;background:var(--arena);padding:18px;border-radius:var(--radio-sm)">
+                <div class="campo">
+                  <label>Nueva tarea *</label>
+                  <input type="text" name="titulo" required placeholder="Ej. Lectura previa">
+                </div>
+                <div class="campos-2">
+                  <div class="campo">
+                    <label>Cita bíblica</label>
+                    <input type="text" name="cita_biblica" placeholder="Ej. 2 Timoteo 3:14-17">
+                  </div>
+                  <div class="campo">
+                    <label>Fecha de entrega</label>
+                    <input type="date" name="fecha_entrega">
+                  </div>
+                </div>
+                <div class="campo">
+                  <label>Instrucciones</label>
+                  <textarea name="descripcion" style="min-height:70px" placeholder="Qué debe hacer el estudiante"></textarea>
+                </div>
+                <button class="boton boton--verde boton--sm">{{ icono('mas', 15) }} Agregar tarea</button>
+              </form>
+            </div>
+
+            <form method="POST" action="{{ url_for('admin.eliminar_clase', clase_id=c.id) }}"
+                  onsubmit="return confirm('Se eliminará la clase y todas sus tareas. ¿Continuar?')"
+                  style="margin-top:18px;padding-top:16px;border-top:1px solid var(--borde-suave)">
+              <button class="boton boton--linea boton--sm" style="color:#A8402F;border-color:#E9B4AA">
+                {{ icono('basura', 15) }} Eliminar clase
+              </button>
+            </form>
+          </div>
+        </details>
+        {% else %}
+        <div class="vacio"><p>Todavía no hay clases creadas.</p></div>
+        {% endfor %}
+      </section>
+    </div>
+
+    {# ==================== AVISOS ==================== #}
+    {% elif seccion == 'avisos' %}
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 class="panel__titulo" style="font-size:1.1rem;margin-bottom:16px">Publicar aviso</h2>
+        <p class="panel__sub" style="margin-bottom:18px">Aparece en el aula de todos los estudiantes.</p>
+        <form method="POST" action="{{ url_for('admin.guardar_anuncio') }}">
+          <div class="campo">
+            <label for="a_titulo">Título *</label>
+            <input type="text" id="a_titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="a_contenido">Contenido *</label>
+            <textarea id="a_contenido" name="contenido" required></textarea>
+          </div>
+          <label style="display:flex;gap:9px;align-items:center;font-size:.88rem;margin-bottom:18px;cursor:pointer">
+            <input type="checkbox" name="fijado" value="1" style="width:auto;margin:0">
+            Fijar arriba de todos
+          </label>
+          <button class="boton boton--principal boton--bloque">Publicar aviso</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel__titulo" style="margin-bottom:18px">Avisos publicados</h2>
+        {% for a in anuncios %}
+        <div class="fila-admin">
+          <div class="fila-admin__cuerpo">
+            <strong>{% if a.fijado %}<span class="chincheta">◆</span> {% endif %}{{ a.titulo }}</strong>
+            <p style="font-size:.87rem;margin:4px 0">{{ a.contenido }}</p>
+            <div class="fila-admin__meta"><span>{{ a.creado_en|fecha_corta }}</span></div>
+          </div>
+          <form method="POST" action="{{ url_for('admin.eliminar_anuncio', anuncio_id=a.id) }}"
+                onsubmit="return confirm('¿Eliminar este aviso?')">
+            <button class="boton-icono boton-icono--peligro">{{ icono('basura', 15) }}</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="vacio"><p>No hay avisos publicados.</p></div>
+        {% endfor %}
+      </section>
+    </div>
+
+    {# ==================== MATERIAL ==================== #}
+    {% elif seccion == 'material' %}
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 class="panel__titulo" style="font-size:1.1rem;margin-bottom:16px">Agregar material</h2>
+        <form method="POST" action="{{ url_for('admin.guardar_recurso') }}">
+          <div class="campo">
+            <label for="r_titulo">Título *</label>
+            <input type="text" id="r_titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="r_tipo">Tipo</label>
+            <select id="r_tipo" name="tipo">
+              <option>Documento</option><option>Video</option><option>Audio</option><option>Lectura</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="r_enlace">Enlace</label>
+            <input type="url" id="r_enlace" name="enlace" placeholder="https://drive.google.com/...">
+            <p class="campo__ayuda">Déjalo vacío si el material se entrega impreso.</p>
+          </div>
+          <div class="campo">
+            <label for="r_desc">Descripción</label>
+            <textarea id="r_desc" name="descripcion" style="min-height:80px"></textarea>
+          </div>
+          <button class="boton boton--principal boton--bloque">Agregar material</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel__titulo" style="margin-bottom:18px">Material publicado</h2>
+        {% for r in recursos %}
+        <div class="fila-admin">
+          <div class="recurso__icono">{{ icono('documento', 16) }}</div>
+          <div class="fila-admin__cuerpo">
+            <strong>{{ r.titulo }}</strong>
+            <div class="fila-admin__meta">
+              <span>{{ r.tipo }}</span>
+              {% if r.enlace %}<span>Con enlace</span>{% else %}<span>En físico</span>{% endif %}
+            </div>
+          </div>
+          <form method="POST" action="{{ url_for('admin.eliminar_recurso', recurso_id=r.id) }}"
+                onsubmit="return confirm('¿Eliminar este material?')">
+            <button class="boton-icono boton-icono--peligro">{{ icono('basura', 15) }}</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="vacio"><p>No hay material publicado.</p></div>
+        {% endfor %}
+      </section>
+    </div>
+
+    {# ==================== ESTUDIANTES ==================== #}
+    {% elif seccion == 'estudiantes' %}
+    <div class="aviso-caja aviso-caja--ojo">
+      {{ icono('candado', 18) }}
+      <span>Las contraseñas se guardan cifradas y no se pueden consultar después.
+            Entrega el usuario y la contraseña en privado a cada estudiante y pídele que la cambie desde su perfil.</span>
+    </div>
+
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 class="panel__titulo" style="font-size:1.1rem;margin-bottom:16px">Crear acceso</h2>
+        <form method="POST" action="{{ url_for('admin.crear_estudiante') }}">
+          <div class="campo">
+            <label for="e_nombre">Nombre completo *</label>
+            <input type="text" id="e_nombre" name="nombre" required>
+          </div>
+          <div class="campo">
+            <label for="e_usuario">Usuario *</label>
+            <input type="text" id="e_usuario" name="usuario" required placeholder="sin espacios, ej. mariagomez">
+          </div>
+          <div class="campo">
+            <label for="e_contrasena">Contraseña provisional *</label>
+            <input type="text" id="e_contrasena" name="contrasena" required minlength="6">
+            <p class="campo__ayuda">Mínimo 6 caracteres. Se muestra en texto para que puedas copiarla.</p>
+          </div>
+          <div class="campos-2">
+            <div class="campo">
+              <label for="e_nivel">Nivel</label>
+              <select id="e_nivel" name="nivel">
+                {% for n in niveles_opts %}<option>{{ n }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="campo">
+              <label for="e_rol">Rol</label>
+              <select id="e_rol" name="rol">
+                <option value="estudiante">Estudiante</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="e_telefono">Teléfono</label>
+            <input type="tel" id="e_telefono" name="telefono">
+          </div>
+          <div class="campo">
+            <label for="e_correo">Correo</label>
+            <input type="email" id="e_correo" name="correo">
+          </div>
+          <button class="boton boton--principal boton--bloque">{{ icono('mas', 16) }} Crear acceso</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel__cabeza">
+          <h2 class="panel__titulo">Personas con acceso</h2>
+          <span class="insignia">{{ estudiantes|length }}</span>
+        </div>
+
+        {% for u in estudiantes %}
+        <details class="detalle-plegable">
+          <summary>
+            <div class="avatar {{ 'avatar--admin' if u.es_admin }}">{{ u.nombre[0]|upper }}</div>
+            <div class="fila-admin__cuerpo">
+              <strong>{{ u.nombre }}</strong>
+              <div class="fila-admin__meta">
+                <span>{{ u.usuario }}</span>
+                <span>{{ 'Administrador' if u.es_admin else u.nivel }}</span>
+                <span>{{ 'Activo' if u.activo else 'Desactivado' }}</span>
+                {% if u.ultimo_ingreso %}<span>Último ingreso {{ u.ultimo_ingreso|fecha_corta }}</span>{% endif %}
+              </div>
+            </div>
+          </summary>
+          <div class="detalle-plegable__cuerpo">
+
+            <!-- 1. Corregir datos -->
+            <div class="tareas__titulo">Datos de la persona</div>
+            <form method="POST" action="{{ url_for('admin.editar_estudiante', usuario_id=u.id) }}"
+                  style="margin-bottom:22px">
+              <div class="campos-2">
+                <div class="campo">
+                  <label>Nombre completo</label>
+                  <input type="text" name="nombre" value="{{ u.nombre }}" required>
+                </div>
+                <div class="campo">
+                  <label>Correo</label>
+                  <input type="email" name="correo" value="{{ u.correo or '' }}">
+                </div>
+              </div>
+              <div class="campos-2">
+                <div class="campo">
+                  <label>Teléfono</label>
+                  <input type="tel" name="telefono" value="{{ u.telefono or '' }}">
+                </div>
+                <div class="campo">
+                  <label>Nivel</label>
+                  <select name="nivel">
+                    {% for n in niveles_opts %}<option {{ 'selected' if u.nivel == n }}>{{ n }}</option>{% endfor %}
+                    <option {{ 'selected' if u.nivel not in niveles_opts }}>{{ u.nivel }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="campo">
+                <label>Rol</label>
+                <select name="rol">
+                  <option value="estudiante" {{ 'selected' if not u.es_admin }}>Estudiante</option>
+                  <option value="admin" {{ 'selected' if u.es_admin }}>Administrador</option>
+                </select>
+                <p class="campo__ayuda">Un administrador puede entrar a este panel y cambiar todo el sitio.</p>
+              </div>
+              <button class="boton boton--principal boton--sm">Guardar datos</button>
+            </form>
+
+            <!-- 2. Contraseña -->
+            <div class="tareas__titulo" style="border-top:1px dashed var(--borde);padding-top:18px">Contraseña</div>
+            <form method="POST" action="{{ url_for('admin.reiniciar_contrasena', usuario_id=u.id) }}"
+                  style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px">
+              <div class="campo" style="flex:1;min-width:220px;margin:0">
+                <label>Nueva contraseña</label>
+                <input type="text" name="nueva" required minlength="6" placeholder="Mínimo 6 caracteres">
+              </div>
+              <button class="boton boton--linea boton--sm">Restablecer</button>
+            </form>
+
+            <!-- 3. Activar / desactivar -->
+            <div class="tareas__titulo" style="border-top:1px dashed var(--borde);padding-top:18px">Acceso</div>
+            <p style="font-size:.87rem;margin-bottom:12px">
+              Desactivar deja a la persona sin poder entrar, pero conserva sus datos.
+              Sirve para quien se retira temporalmente. Se puede reactivar cuando vuelva.
+            </p>
+            <form method="POST" action="{{ url_for('admin.cambiar_estado', usuario_id=u.id) }}"
+                  style="margin-bottom:22px">
+              <button class="boton boton--linea boton--sm">
+                {{ 'Desactivar acceso' if u.activo else 'Reactivar acceso' }}
+              </button>
+            </form>
+
+            <!-- 4. Eliminar definitivamente -->
+            {% if u.id != current_user.id %}
+            <div class="tareas__titulo" style="border-top:1px dashed var(--borde);padding-top:18px;color:#A8402F">
+              Eliminar definitivamente
+            </div>
+            <p style="font-size:.87rem;margin-bottom:12px">
+              Esto borra a la persona de la base de datos y no se puede deshacer.
+              Para confirmar, escribe su usuario exacto: <strong>{{ u.usuario }}</strong>
+            </p>
+            <form method="POST" action="{{ url_for('admin.eliminar_estudiante', usuario_id=u.id) }}"
+                  onsubmit="return confirm('Se eliminará a {{ u.nombre }} de forma definitiva. ¿Continuar?')"
+                  style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+              <div class="campo" style="flex:1;min-width:200px;margin:0">
+                <label>Escribe «{{ u.usuario }}» para confirmar</label>
+                <input type="text" name="confirmacion" required placeholder="{{ u.usuario }}" autocomplete="off">
+              </div>
+              <button class="boton boton--linea boton--sm" style="color:#A8402F;border-color:#E9B4AA">
+                {{ icono('basura', 15) }} Eliminar
+              </button>
+            </form>
+            {% else %}
+            <p style="font-size:.85rem;color:var(--texto-suave);border-top:1px dashed var(--borde);padding-top:18px">
+              Esta es tu propia cuenta: no puedes eliminarla ni desactivarla desde aquí.
+            </p>
+            {% endif %}
+          </div>
+        </details>
+        {% endfor %}
+      </section>
+    </div>
+
+    {# ==================== EVENTOS ==================== #}
+    {% elif seccion == 'eventos' %}
+    <div class="aviso-caja aviso-caja--info">
+      {{ icono('campana', 18) }}
+      <span>Lo que publiques aquí aparece en la página principal, en «Eventos y actividades» y en el calendario.</span>
+    </div>
+
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 class="panel__titulo" style="font-size:1.1rem;margin-bottom:16px">Nuevo evento</h2>
+        <form method="POST" action="{{ url_for('admin.guardar_evento') }}">
+          <div class="campo">
+            <label for="ev_titulo">Título *</label>
+            <input type="text" id="ev_titulo" name="titulo" required>
+          </div>
+          <div class="campo">
+            <label for="ev_fecha">Fecha y hora *</label>
+            <input type="datetime-local" id="ev_fecha" name="fecha" required>
+          </div>
+          <div class="campos-2">
+            <div class="campo">
+              <label for="ev_lugar">Lugar</label>
+              <input type="text" id="ev_lugar" name="lugar" value="Templo principal">
+            </div>
+            <div class="campo">
+              <label for="ev_cat">Categoría</label>
+              <select id="ev_cat" name="categoria">
+                <option>General</option><option>Oración</option><option>Familia</option>
+                <option>Jóvenes</option><option>Niños</option><option>Servicio</option>
+                <option>Congregación</option>
+              </select>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="ev_desc">Descripción</label>
+            <textarea id="ev_desc" name="descripcion" style="min-height:90px"></textarea>
+          </div>
+          <label style="display:flex;gap:9px;align-items:center;font-size:.88rem;margin-bottom:18px;cursor:pointer">
+            <input type="checkbox" name="destacado" value="1" style="width:auto;margin:0"> Marcar como destacado
+          </label>
+          <button class="boton boton--principal boton--bloque">Publicar evento</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel__titulo" style="margin-bottom:18px">Eventos publicados</h2>
+        {% for e in eventos %}
+        <div class="fila-admin {{ 'fila-admin--apagada' if e.fecha < ahora }}">
+          <div class="evento__fecha" style="width:60px;padding:9px 4px">
+            <strong style="font-size:1.3rem">{{ e.fecha.day }}</strong>
+            <span>{{ e.fecha|mes_corto }}</span>
+          </div>
+          <div class="fila-admin__cuerpo">
+            <strong>{{ e.titulo }}</strong>
+            <div class="fila-admin__meta">
+              <span>{{ e.fecha|hora12 }}</span><span>{{ e.lugar }}</span><span>{{ e.categoria }}</span>
+              {% if e.fecha < ahora %}<span>Ya pasó</span>{% endif %}
+            </div>
+          </div>
+          <form method="POST" action="{{ url_for('admin.eliminar_evento', evento_id=e.id) }}"
+                onsubmit="return confirm('¿Eliminar este evento?')">
+            <button class="boton-icono boton-icono--peligro">{{ icono('basura', 15) }}</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="vacio"><p>No hay eventos publicados.</p></div>
+        {% endfor %}
+      </section>
+    </div>
+
+    {# ==================== MENSAJES ==================== #}
+    {% elif seccion == 'mensajes' %}
+    <section class="panel">
+      <div class="panel__cabeza">
+        <div>
+          <h2 class="panel__titulo">Mensajes del formulario de contacto</h2>
+          <p class="panel__sub">{{ sin_leer }} sin leer · se muestran los 30 más recientes</p>
+        </div>
+      </div>
+
+      {% for m in mensajes %}
+      <div class="fila-admin {{ 'fila-admin--apagada' if m.leido }}">
+        <div class="fila-admin__cuerpo">
+          <strong>{{ m.nombre }} — {{ m.asunto }}</strong>
+          <p style="font-size:.9rem;margin:6px 0">{{ m.mensaje }}</p>
+          <div class="fila-admin__meta">
+            <span>{{ m.creado_en|fecha_corta }}</span>
+            {% if m.correo %}<span><a href="mailto:{{ m.correo }}">{{ m.correo }}</a></span>{% endif %}
+            {% if m.telefono %}<span><a href="tel:{{ m.telefono }}">{{ m.telefono }}</a></span>{% endif %}
+          </div>
+        </div>
+        <form method="POST" action="{{ url_for('admin.marcar_leido', mensaje_id=m.id) }}">
+          <button class="boton-icono" title="{{ 'Marcar como no leído' if m.leido else 'Marcar como leído' }}">
+            {{ icono('chequeo', 16) }}
+          </button>
+        </form>
+      </div>
+      {% else %}
+      <div class="vacio">
+        <div class="vacio__icono">{{ icono('correo', 30) }}</div>
+        <p>No hay mensajes por ahora.</p>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

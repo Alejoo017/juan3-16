@@ -1,0 +1,79 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+{% block titulo %}Cronograma — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+<div class="aula__cuerpo">
+  <div class="contenedor contenedor-estrecho">
+
+    <div class="aula__saludo">
+      <h1>Cronograma</h1>
+      <p>Todas las sesiones del programa, en orden.</p>
+    </div>
+
+    <section class="panel">
+      <div class="panel__cabeza">
+        <div>
+          <h2 class="panel__titulo">Lo que viene</h2>
+          <p class="panel__sub">{{ futuras|length }} sesión(es) programada(s)</p>
+        </div>
+      </div>
+
+      {% if futuras %}
+      <div class="linea-tiempo">
+        {% for c in futuras %}
+        <article class="hito">
+          <div class="hito__tarjeta">
+            <div class="hito__fecha">{{ c.fecha|fecha_larga }} · {{ c.fecha|hora12 }}</div>
+            <h3 class="hito__titulo">{{ c.titulo }}</h3>
+            {% if c.descripcion %}<p style="font-size:.93rem">{{ c.descripcion }}</p>{% endif %}
+            <div class="clase-proxima__meta" style="margin-top:12px">
+              <span class="insignia {% if c.modalidad == 'Virtual' %}insignia--azul{% elif c.modalidad == 'Mixta' %}insignia--arcilla{% endif %}">{{ c.modalidad }}</span>
+              <span class="insignia insignia--terracota">{{ c.nivel }}</span>
+              {% if c.tareas %}<span class="insignia">{{ c.tareas|length }} tarea(s)</span>{% endif %}
+            </div>
+            <div class="acciones-clase">
+              <a href="{{ url_for('estudio.detalle_clase', clase_id=c.id) }}" class="boton boton--linea boton--sm">Ver detalle</a>
+              {% if c.enlace %}
+              <a href="{{ c.enlace }}" target="_blank" rel="noopener" class="boton boton--principal boton--sm">
+                {{ icono('video', 15) }} Entrar
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="vacio">
+        <div class="vacio__icono">{{ icono('calendario', 30) }}</div>
+        <p>No hay sesiones programadas por ahora.</p>
+      </div>
+      {% endif %}
+    </section>
+
+    {% if pasadas %}
+    <section class="panel">
+      <div class="panel__cabeza">
+        <div>
+          <h2 class="panel__titulo">Sesiones anteriores</h2>
+          <p class="panel__sub">Para repasar lo que ya se vio</p>
+        </div>
+      </div>
+      <div class="linea-tiempo">
+        {% for c in pasadas %}
+        <article class="hito hito--pasado">
+          <div class="hito__tarjeta">
+            <div class="hito__fecha">{{ c.fecha|fecha_corta }}</div>
+            <h3 class="hito__titulo">{{ c.titulo }}</h3>
+            <a href="{{ url_for('estudio.detalle_clase', clase_id=c.id) }}" class="boton boton--linea boton--sm" style="margin-top:12px">Ver detalle</a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

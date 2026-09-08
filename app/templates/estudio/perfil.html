@@ -1,0 +1,67 @@
+{% extends 'estudio/base_aula.html' %}
+{% from 'parciales/iconos.html' import icono with context %}
+{% block titulo %}Mi perfil — Estudio bíblico{% endblock %}
+
+{% block contenido %}
+<div class="aula__cuerpo">
+  <div class="contenedor contenedor-estrecho">
+
+    <div class="aula__saludo">
+      <h1>Mi perfil</h1>
+      <p>Tus datos dentro del programa de estudio.</p>
+    </div>
+
+    <section class="panel">
+      <div style="display:flex;gap:18px;align-items:center;margin-bottom:24px">
+        <div class="avatar {{ 'avatar--admin' if current_user.es_admin }}" style="width:60px;height:60px;font-size:1.3rem">
+          {{ current_user.nombre[0]|upper }}
+        </div>
+        <div>
+          <h2 style="font-size:1.3rem;margin-bottom:2px">{{ current_user.nombre }}</h2>
+          <p style="margin:0;font-size:.9rem">{{ 'Administración' if current_user.es_admin else current_user.nivel }}</p>
+        </div>
+      </div>
+
+      <table class="tabla-simple">
+        <tr><th>Usuario</th><td>{{ current_user.usuario }}</td></tr>
+        <tr><th>Correo</th><td>{{ current_user.correo or '—' }}</td></tr>
+        <tr><th>Teléfono</th><td>{{ current_user.telefono or '—' }}</td></tr>
+        <tr><th>Nivel</th><td>{{ current_user.nivel }}</td></tr>
+        <tr><th>Inscrito desde</th><td>{{ current_user.creado_en|fecha_corta }}</td></tr>
+      </table>
+
+      <p class="campo__ayuda" style="margin-top:16px">
+        Para corregir tu nombre, correo o nivel, escribe a la administración.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="panel__cabeza">
+        <div>
+          <h2 class="panel__titulo">Cambiar contraseña</h2>
+          <p class="panel__sub">Recomendado la primera vez que ingresas</p>
+        </div>
+      </div>
+
+      <form method="POST">
+        <div class="campo">
+          <label for="actual">Contraseña actual</label>
+          <input type="password" id="actual" name="actual" required autocomplete="current-password">
+        </div>
+        <div class="campos-2">
+          <div class="campo">
+            <label for="nueva">Nueva contraseña</label>
+            <input type="password" id="nueva" name="nueva" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="campo">
+            <label for="repetir">Repetir contraseña</label>
+            <input type="password" id="repetir" name="repetir" required minlength="6" autocomplete="new-password">
+          </div>
+        </div>
+        <button class="boton boton--principal">Actualizar contraseña</button>
+      </form>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

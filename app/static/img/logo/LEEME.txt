@@ -1,0 +1,9 @@
+Coloca aquí el logo de la iglesia con este nombre:
+
+  logo.png
+
+Se usa en la cabecera, en el pie y como icono de la pestaña del navegador.
+Recomendación: PNG con fondo transparente, mínimo 200 x 200 px.
+
+Si el archivo no existe, el sitio dibuja un logo de reemplazo (cruz + llama)
+hecho con SVG, así que nada se rompe mientras tanto.
