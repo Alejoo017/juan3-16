@@ -45,7 +45,7 @@ IGLESIA = {
     # --- WhatsApp -----------------------------------------------------------
     # Formato internacional SIN espacios, SIN "+", SIN guiones. Ej: 573000000000
     "whatsapp_oracion": "573000000000",       # línea de oración
-    "whatsapp_inscripcion": "573000000000",   # chat del pastor Isaí (inscripciones)
+    "whatsapp_inscripcion": "573000000000",   # chat del pastor Daniel (inscripciones)
     "whatsapp_admin": "573000000000",         # soporte de acceso al estudio
 
     # --- Redes --------------------------------------------------------------

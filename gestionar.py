@@ -17,7 +17,7 @@ USO:
 
 Ejemplos:
     python gestionar.py crear
-    python gestionar.py clave isai
+    python gestionar.py clave daniel
     python gestionar.py borrar mariagomez
 """
 import shutil
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     argumento = sys.argv[2] if len(sys.argv) > 2 else None
 
     if comando in COMANDOS_CON_USUARIO and not argumento:
-        error(f"Falta el usuario. Ejemplo: python gestionar.py {comando} isai")
+        error(f"Falta el usuario. Ejemplo: python gestionar.py {comando} daniel")
         sys.exit(1)
 
     with app.app_context():

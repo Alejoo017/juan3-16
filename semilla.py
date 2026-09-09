@@ -46,12 +46,12 @@ with app.app_context():
     # USUARIOS
     # -----------------------------------------------------------------------
     if not Usuario.query.first():
-        admin = Usuario(usuario="isai", nombre="Isaí Sánchez", rol="admin",
-                        nivel="Docente", correo="isai@comunidadjuan316.org")
+        admin = Usuario(usuario="daniel", nombre="Daniel Herrera", rol="admin",
+                        nivel="Docente", correo="daniel@comunidadjuan316.org")
         admin.poner_contrasena(CLAVE_ADMIN)
 
-        admin2 = Usuario(usuario="omar", nombre="Omar", rol="admin",
-                         nivel="Pastor", correo="omar@comunidadjuan316.org")
+        admin2 = Usuario(usuario="marcos", nombre="Marcos Rivera", rol="admin",
+                         nivel="Pastor", correo="marcos@comunidadjuan316.org")
         admin2.poner_contrasena(CLAVE_PASTOR)
 
         alumno = Usuario(usuario="estudiante", nombre="Estudiante de prueba",
@@ -67,7 +67,7 @@ with app.app_context():
     if not Pastor.query.first():
         db.session.add_all([
             Pastor(
-                nombre="Pastor Omar",
+                nombre="Marcos Rivera",
                 cargo="Pastor principal",
                 anios_servicio=25, desde=2001,
                 enfasis="Predicación expositiva · Acompañamiento pastoral · Familia",
@@ -76,10 +76,10 @@ with app.app_context():
                         "la preparación de la enseñanza dominical. Su trabajo se ha centrado "
                         "en formar una congregación que conozca las Escrituras y se sostenga "
                         "en comunidad."),
-                foto="pastor-omar.jpg", orden=1,
+                foto="pastor-marcos.jpg", orden=1,
             ),
             Pastor(
-                nombre="Isaí Sánchez",
+                nombre="Daniel Herrera",
                 cargo="Pastor · Director del estudio bíblico",
                 anios_servicio=12, desde=2014,
                 enfasis="Enseñanza bíblica · Discipulado · Formación de nuevos creyentes",
@@ -87,7 +87,7 @@ with app.app_context():
                         "iglesia. Su trabajo consiste en acompañar, semana a semana, a "
                         "quienes quieren entender las Escrituras con orden y profundidad, "
                         "desde los fundamentos hasta la preparación para servir."),
-                foto="pastor-isai.jpg", orden=2,
+                foto="pastor-daniel.jpg", orden=2,
             ),
         ])
         print("· Pastores creados")
@@ -107,7 +107,7 @@ with app.app_context():
                   descripcion="Tiempo de intercesión por la iglesia, las familias y la ciudad.",
                   dirigido_a="Toda la congregación", orden=3),
             Culto(nombre="Estudio bíblico", dia="Viernes", hora="7:00 p. m.",
-                  descripcion="Clase del programa de formación dirigida por el pastor Isaí Sánchez.",
+                  descripcion="Clase del programa de formación dirigida por el pastor Daniel Herrera.",
                   dirigido_a="Estudiantes inscritos", orden=4),
             Culto(nombre="Reunión de jóvenes", dia="Sábado", hora="4:00 p. m.",
                   descripcion="Encuentro de jóvenes y adolescentes.",
@@ -124,7 +124,7 @@ with app.app_context():
                        descripcion="Enseñanza bíblica adaptada por edades, con acompañamiento durante el culto general.", orden=1),
             Ministerio(nombre="Jóvenes", icono="✧", responsable="Liderazgo juvenil",
                        descripcion="Espacio de formación, servicio y compañerismo para adolescentes y jóvenes adultos.", orden=2),
-            Ministerio(nombre="Matrimonios y familia", icono="◈", responsable="Pastor Omar",
+            Ministerio(nombre="Matrimonios y familia", icono="◈", responsable="Marcos Rivera",
                        descripcion="Encuentros y consejería para parejas y padres de familia.", orden=3),
             Ministerio(nombre="Alabanza", icono="♪", responsable="Equipo de música",
                        descripcion="Servicio musical de los cultos y formación de nuevos músicos.", orden=4),
@@ -249,8 +249,8 @@ print("""
 Base de datos lista.
 
 Accesos creados. CÁMBIALOS desde el panel en cuanto entres:
-  Administrador   usuario: isai
-  Administrador   usuario: omar
+  Administrador   usuario: daniel
+  Administrador   usuario: marcos
   Estudiante      usuario: estudiante
 
 Las contraseñas son las definidas en CLAVE_ADMIN, CLAVE_PASTOR y CLAVE_ALUMNO

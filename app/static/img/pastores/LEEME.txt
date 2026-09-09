@@ -1,7 +1,7 @@
 Coloca aquí las fotos de los pastores con EXACTAMENTE estos nombres:
 
-  pastor-omar.jpg   -> foto del pastor Omar
-  pastor-isai.jpg   -> foto de Isaí Sánchez
+  pastor-marcos.jpg   -> foto del pastor Marcos Rivera
+  pastor-daniel.jpg   -> foto de Daniel Herrera
 
 Recomendación: formato vertical (por ejemplo 1200 x 1500 px), en .jpg.
 Si el archivo no existe, el sitio muestra un recuadro con la inicial en

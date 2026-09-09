@@ -103,7 +103,7 @@ Abre **http://127.0.0.1:5001** en el navegador.
 
 ### Primeros pasos
 
-`semilla.py` crea tres accesos (`isai`, `omar` y `estudiante`) con las
+`semilla.py` crea tres accesos (`daniel`, `marcos` y `estudiante`) con las
 contraseñas definidas al inicio de ese archivo. **Cámbialas desde el panel de
 administración en cuanto ingreses por primera vez.**
 
